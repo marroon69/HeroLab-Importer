@@ -827,6 +827,9 @@ export class HeroLabImporter {
         //Nothing found, try removing ending parenthetic word
         if(!gearItem) {
           gearItem = await this.findItem("pf2e.equipment-srd",value.name.replace(/\s*\(.*?\)\s*/g, ''));
+           if (!gearItem){
+             gearItem = await this.findItem("pf2e.equipment-srd", CONSTANTS.EQUIPMENT_LOOKUP[value.name]); 
+           }
         }
         if(gearItem) {
           //var addedItem = await targetActor.createEmbeddedDocuments('Item',[gearItem.toObject()], {render: false})
