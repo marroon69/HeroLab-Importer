@@ -76,6 +76,9 @@ CLASS_CASTER_TYPE: {
     "Expert": 2,
     "Master": 3,
     "Legendary": 4,
+  },
+ EQUIPMENT_LOOKUP: {
+    "Tent, pup":"Tent (Pup)"
   }
 
 };
