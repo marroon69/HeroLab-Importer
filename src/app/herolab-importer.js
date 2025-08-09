@@ -822,13 +822,15 @@ export class HeroLabImporter {
     var gearItem;
     
     for (var [key, value] of Object.entries(exportGear)) {
-      if(!(value.compset == 'Spell' || value.compset == 'WeaponTrait')) {
+      if(!(value.compset == 'Spell' || value.compset == 'WeaponTrait' || value.compset == 'ArmorTrait')) {
         gearItem = await this.findItem("pf2e.equipment-srd",value.name);
         //Nothing found, try removing ending parenthetic word
         if(!gearItem) {
           gearItem = await this.findItem("pf2e.equipment-srd",value.name.replace(/\s*\(.*?\)\s*/g, ''));
            if (!gearItem){
-             gearItem = await this.findItem("pf2e.equipment-srd", CONSTANTS.EQUIPMENT_LOOKUP[value.name]); 
+              if (CONSTANTS.EQUIPMENT_LOOKUP[value.name]) { 
+                 gearItem = await this.findItem("pf2e.equipment-srd", CONSTANTS.EQUIPMENT_LOOKUP[value.name]); 
+               } 
            }
         }
         if(gearItem) {
