@@ -48,7 +48,7 @@ CLASS_CASTER_TYPE: {
     "Dexterity": "dex",
     "Intelligence": "int",
     "Strength": "str",
-    "Wisdon": "wis",
+    "Wisdom": "wis",
   },
 
   SKILL_LOOKUP: {
