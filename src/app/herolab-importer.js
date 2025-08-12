@@ -501,10 +501,10 @@ export class HeroLabImporter {
     HeroLabImporter.log(this.hlodebug, "Couldn't add these spells: " + this.spellsNotAdded);
 
     targetActor.update({
-      "flags.exportSource.world": game.world.id,
-      "flags.exportSource.system": game.system.id,
-      "flags.exportSource.systemVersion": game.system.version,
-      "flags.exportSource.coreVersion": game.version,
+    //  "flags.exportSource.world": game.world.id,
+    //  "flags.exportSource.system": game.system.id,
+    // "flags.exportSource.systemVersion": game.system.version,
+    //  "flags.exportSource.coreVersion": game.version,
       "flags.herolabimporter.version.value": hloiVer,
     });
 
