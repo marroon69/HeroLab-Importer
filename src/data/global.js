@@ -79,7 +79,35 @@ CLASS_CASTER_TYPE: {
   },
  EQUIPMENT_LOOKUP: {
     "Tent, pup":"Tent (Pup)"
+  },
+
+  FUNDAMENTAL_RUNE_WEAPON_POTENCY: {
+    "WepPotency1":1,
+    "WepPotency2":2,
+    "WepPotency3":3,
+    "WepPotencyMy":4
+  },
+  
+  FUNDEMENTAL_RUNE_WEAPON_STRIKING :{
+    "WepStriking" :1,
+    "WepStrikingGr" :2,
+    "WepStrikingMj" :3,
+    "WepStrikingMy" :4
+  },
+
+    FUNDAMENTAL_RUNE_ARMOR_POTENCY: {
+    "ArmPotency1":1,
+    "ArmPotency2":2,
+    "ArmPotency3":3,
+    "ArmPotencyMy":4
+  },
+  FUNDEMENTAL_RUNE_ARMOR_RELILIENT :{
+    "ArmResilient" :1,
+    "ArmResilientGr" :2,
+    "ArmResilientMj" :3,
+    "ArmResilientMy" :4
   }
+
 
 };
 

@@ -5,118 +5,118 @@ import CONSTANTS from "../data/global.js"
 const hloiVer = "v0.2.6"
 
 let hlodebug = false;
-const color1='color: #7bf542';  //bright green
-const color2='color: #d8eb34'; //yellow green
-const color3='color: #ffffff'; //white
-const color4='color: #cccccc'; //gray
-const color5='color: #ff0000'; //red
-var HeroLab,userToken;
-var HeroLabButton=true;
+const color1 = 'color: #7bf542';  //bright green
+const color2 = 'color: #d8eb34'; //yellow green
+const color3 = 'color: #ffffff'; //white
+const color4 = 'color: #cccccc'; //gray
+const color5 = 'color: #ff0000'; //red
+var HeroLab, userToken;
+var HeroLabButton = true;
 
 
 var characterExport;
 
 console.log('HeroLab-Importer | Hello World!');
 
-Hooks.on('ready', async function() {
-  if (game.system.id!="pf2e") {
-    console.log("%cHeroLab Importer | %cWrong game system. %cNot enabling.",color1,color5,color4);
+Hooks.on('ready', async function () {
+  if (game.system.id != "pf2e") {
+    console.log("%cHeroLab Importer | %cWrong game system. %cNot enabling.", color1, color5, color4);
   } else {
     //console.log("%cHeroLab Importer | %cinitializing",color1,color4);
-      game.settings.register('herolab-importer', 'userToken', {
-        name : "User Token",
-        hint : "Please enter your personal user token. A user token allows external tools (like this one) to access the Hero Lab server and perform export operations.\
+    game.settings.register('herolab-importer', 'userToken', {
+      name: "User Token",
+      hint: "Please enter your personal user token. A user token allows external tools (like this one) to access the Hero Lab server and perform export operations.\
                 \nThis should be the GMs user token if using a Campaign in Hero Lab.",
-        scope : "world",
-        config : true,
-        type : String,
-        default : '',
-        restricted : true,
-        onChange: value => (userToken=value)
-      });
-      game.settings.register('herolab-importer', 'debugEnabled', {
-        name : "Enable debug mode",
-        hint : "Debug output will be written to the js console.",
-        scope : "client",
-        config : true,
-        type: Boolean,
-        default: false,
-        onChange: value => (hlodebug=value)
-      });
-      game.settings.register('herolab-importer', 'elementToken', {
-        name : "Element Token",
-        hint : "Please enter your character's element token. This is how we will import your character. If you plan to import multiple characters, leave this blank.",
-        scope : 'client',
-        config : true,
-        type : String,
-        default : '',
-      });
-      game.settings.register('herolab-importer', 'importEquipment', {
-        name : "Import Equipment",
-        scope : "client",
-        config : false,
-        type : Boolean,
-        default : true,
-      });
-      game.settings.register('herolab-importer', 'importSpells', {
-        name : "Import Spells",
-        scope : "client",
-        config : false,
-        type : Boolean,
-        default : true,
-      });
-      game.settings.register('herolab-importer', 'importFeats', {
-        name : "Import Feats",
-        scope : "client",
-        config : false,
-        type : Boolean,
-        default : true,
-      });
-      game.settings.register('herolab-importer', 'importSkills', {
-        name : "Import Skills",
-        scope : "client",
-        config : false,
-        type : Boolean,
-        default : true,
-      });
-      game.settings.register('herolab-importer', 'importWealth', {
-        name : "Import Wealth",
-        scope : "client",
-        config : false,
-        type : Boolean,
-        default : true,
-      });
+      scope: "world",
+      config: true,
+      type: String,
+      default: '',
+      restricted: true,
+      onChange: value => (userToken = value)
+    });
+    game.settings.register('herolab-importer', 'debugEnabled', {
+      name: "Enable debug mode",
+      hint: "Debug output will be written to the js console.",
+      scope: "client",
+      config: true,
+      type: Boolean,
+      default: false,
+      onChange: value => (hlodebug = value)
+    });
+    game.settings.register('herolab-importer', 'elementToken', {
+      name: "Element Token",
+      hint: "Please enter your character's element token. This is how we will import your character. If you plan to import multiple characters, leave this blank.",
+      scope: 'client',
+      config: true,
+      type: String,
+      default: '',
+    });
+    game.settings.register('herolab-importer', 'importEquipment', {
+      name: "Import Equipment",
+      scope: "client",
+      config: false,
+      type: Boolean,
+      default: true,
+    });
+    game.settings.register('herolab-importer', 'importSpells', {
+      name: "Import Spells",
+      scope: "client",
+      config: false,
+      type: Boolean,
+      default: true,
+    });
+    game.settings.register('herolab-importer', 'importFeats', {
+      name: "Import Feats",
+      scope: "client",
+      config: false,
+      type: Boolean,
+      default: true,
+    });
+    game.settings.register('herolab-importer', 'importSkills', {
+      name: "Import Skills",
+      scope: "client",
+      config: false,
+      type: Boolean,
+      default: true,
+    });
+    game.settings.register('herolab-importer', 'importWealth', {
+      name: "Import Wealth",
+      scope: "client",
+      config: false,
+      type: Boolean,
+      default: true,
+    });
   }
   hlodebug = game.settings.get('herolab-importer', 'debugEnabled');
   userToken = game.settings.get('herolab-importer', 'userToken');
   HeroLab = new HeroLabImporter(hlodebug);
 });
 
-Hooks.on('renderActorSheet', function(obj, html){
+Hooks.on('renderActorSheet', function (obj, html) {
   hlodebug = game.settings.get('herolab-importer', 'debugEnabled');
-  if (game.system.id!="pf2e") {
-    console.log("%cHeroLab Importer | %cWrong game system. %cNot adding HeroLab button to actor sheet.",color1,color5,color4);
+  if (game.system.id != "pf2e") {
+    console.log("%cHeroLab Importer | %cWrong game system. %cNot adding HeroLab button to actor sheet.", color1, color5, color4);
   } else {
     // Only inject the link if the actor is of type "character" and the user has permission to update it
-      const actor = obj.actor;
+    const actor = obj.actor;
 
-      if (!(actor.type === "character")){ return;}
-      if (actor.canUserModify(game.user, "update")==false){ return;}
-      
-      if (HeroLabButton) {
-        let element = html.find(".window-header .window-title");
-        if (element.length != 1) {return;}
-        
-        let button = $(`<a class="popout" style><i class="fas fa-flask"></i>HeroLab</a>`);
-        userToken = game.settings.get('herolab-importer', 'userToken');
-        if (hlodebug) {
-          console.log("%cHeroLab Importer | %cherolab-importer token: "+ userToken,color1,color4);
-        }
-        button.on('click', () => HeroLab.beginHeroLabImport(obj.object,userToken));
-        element.after(button);
+    if (!(actor.type === "character")) { return; }
+    if (actor.canUserModify(game.user, "update") == false) { return; }
+
+    if (HeroLabButton) {
+      let element = html.find(".window-header .window-title");
+      if (element.length != 1) { return; }
+
+      let button = $(`<a class="popout" style><i class="fas fa-flask"></i>HeroLab</a>`);
+      userToken = game.settings.get('herolab-importer', 'userToken');
+      if (hlodebug) {
+        console.log("%cHeroLab Importer | %cherolab-importer token: " + userToken, color1, color4);
       }
+      button.on('click', () => HeroLab.beginHeroLabImport(obj.object, userToken));
+      element.after(button);
     }
   }
+}
 );
 
 export class HeroLabImporter {
@@ -130,7 +130,7 @@ export class HeroLabImporter {
     this.importFeats = game.settings.get('herolab-importer', 'importFeats');
     this.importSkills = game.settings.get('herolab-importer', 'importSkills');
     this.importWealth = game.settings.get('herolab-importer', 'importWealth');
-    
+
     this.debugMatch = {
       Ancestry: {},
       Heritage: {},
@@ -143,16 +143,16 @@ export class HeroLabImporter {
 
   }
 
-  async beginHeroLabImport(targetActor,userToken) {
+  async beginHeroLabImport(targetActor, userToken) {
     //Clear out the used arrays
     this.debugMatch.Spells = [];
     this.debugMatch.Feats = [];
     this.debugMatch.Equipment = [];
     this.itemsNotAdded = [];
     this.spellsNotAdded = [];
-    
+
     window.testActor = targetActor;
-    HeroLabImporter.log(this.hlodebug,'Starting HeroLabImport')
+    HeroLabImporter.log(this.hlodebug, 'Starting HeroLabImport')
 
     let importCharacter = false;
     let elementToken = game.settings.get('herolab-importer', 'elementToken');
@@ -254,10 +254,10 @@ export class HeroLabImporter {
     });
 
     //Get the export
-    if(importCharacter) {
+    if (importCharacter) {
       characterExport = await this.getHeroLabExport(userToken, elementToken);
 
-      if(characterExport) {
+      if (characterExport) {
         importCharacter = await Dialog.confirm({
           title: "Confirm Import",
           content: `<p>You are about to import ${characterExport.actors['actor.1'].name}. Please confirm.</p>
@@ -275,26 +275,26 @@ export class HeroLabImporter {
     }
 
     //Import the main Character
-    if(importCharacter) {
-      await this.importActorGameValues(targetActor,characterExport.actors['actor.1']);
+    if (importCharacter) {
+      await this.importActorGameValues(targetActor, characterExport.actors['actor.1']);
       this.displayChangesDialog();
     }
 
-    
-    
+
+
     targetActor.sheet.render()
   }
 
   displayChangesDialog() {
     let content = `<div class="changes">`
-    for(let [section, data] of Object.entries(this.debugMatch)) {
+    for (let [section, data] of Object.entries(this.debugMatch)) {
       content += `<div><header class="bold">${section}</header>`
-      if(!Array.isArray(data)) {
+      if (!Array.isArray(data)) {
         content += `<p class="tab">${data.import} -> `
         content += `<a class="content-link" draggable="true" data-link data-uuid="${data.export.uuid}" data-type="Item"><i class="fas fa-suitcase"></i>${data.export.name}</a></p>`
       }
       else {
-        for(let item of data) {
+        for (let item of data) {
           content += `<p class="tab">${item.import.name} -> `
           content += `<a class="content-link" draggable="true" data-link data-uuid="${item.export.uuid}" data-type="Item"><i class="fas fa-suitcase"></i>"${item.export.name}"</a></p>`
         }
@@ -326,45 +326,45 @@ export class HeroLabImporter {
   async getHeroLabExport(userToken, elementToken) {
     let charExport;
 
-    HeroLabImporter.log(this.hlodebug,'Getting export from Hero Lab Online');
+    HeroLabImporter.log(this.hlodebug, 'Getting export from Hero Lab Online');
     const accessToken = await this.getHeroLabAccessToken(userToken);
 
-    if(!accessToken) return null;
+    if (!accessToken) return null;
 
     //Fetch the character Export
     await foundry.utils.fetchJsonWithTimeout("https://api.herolab.online/v1/character/get", {
       method: "POST",
       body: JSON.stringify({
-          accessToken : accessToken,
-          elementToken : elementToken
+        accessToken: accessToken,
+        elementToken: elementToken
       }),
       headers: {
-          "Content-type": "application/json; charset=UTF-8"
+        "Content-type": "application/json; charset=UTF-8"
       }
     })
       .then((response) => {
         charExport = response
       })
       .catch((error) => {
-        console.error("%cHeroLab Importer | %cUnable to import HeroLab JSON! Error: "+error,color1,color4)
+        console.error("%cHeroLab Importer | %cUnable to import HeroLab JSON! Error: " + error, color1, color4)
       });
 
-    HeroLabImporter.log(this.hlodebug, "Character JSON: "+ charExport);
+    HeroLabImporter.log(this.hlodebug, "Character JSON: " + charExport);
 
     window.charExport = charExport;
 
-    if(charExport?.error) {
-      console.error("%cHeroLab Importer | %cUnable to import HeroLab JSON! Error: "+charExport.error,color1,color4)
+    if (charExport?.error) {
+      console.error("%cHeroLab Importer | %cUnable to import HeroLab JSON! Error: " + charExport.error, color1, color4)
       return undefined;
     }
     else {
       return charExport.export;
     }
-    
+
   }
 
   async getHeroLabAccessToken(userToken) {
-    HeroLabImporter.log(this.hlodebug,'Getting access token from Hero Lab Online ');
+    HeroLabImporter.log(this.hlodebug, 'Getting access token from Hero Lab Online ');
 
     //Fetch the access token
     const response = await foundry.utils.fetchJsonWithTimeout("https://api.herolab.online/v1/access/acquire-access-token", {
@@ -388,112 +388,112 @@ export class HeroLabImporter {
     return response?.accessToken
   }
 
-  async importActorGameValues(targetActor,characterActorExport) {
+  async importActorGameValues(targetActor, characterActorExport) {
     //Get all the items from Export
     let exportItems = this.getItemsFromActor(characterActorExport);
 
     //Update Name
-    if(!(targetActor.name === characterActorExport.name)) {
-      targetActor.update({'name': characterActorExport.name}, {render: false});
-      targetActor.update({'prototypeToken.name': characterActorExport.name}, {render: false});
-      HeroLabImporter.log(this.hlodebug,'Updating Actor Name to '+ characterActorExport.name);
+    if (!(targetActor.name === characterActorExport.name)) {
+      targetActor.update({ 'name': characterActorExport.name }, { render: false });
+      targetActor.update({ 'prototypeToken.name': characterActorExport.name }, { render: false });
+      HeroLabImporter.log(this.hlodebug, 'Updating Actor Name to ' + characterActorExport.name);
     }
 
     //Set Ancestry
-    if(characterActorExport.gameValues?.actRace) {
+    if (characterActorExport.gameValues?.actRace) {
       let importAncestry = characterActorExport.gameValues.actRace
-      let pf2eAncestry = await this.findItem("pf2e.ancestries",importAncestry);
+      let pf2eAncestry = await this.findItem("pf2e.ancestries", importAncestry);
       //Can't find Ancestry? Try again with only first word
-      if(!pf2eAncestry) pf2eAncestry = await this.findItem("pf2e.ancestries",importAncestry.split(" ")[0]);
-      if(!(pf2eAncestry?.name === targetActor.ancestry?.name)) 
-        await targetActor.createEmbeddedDocuments('Item',[pf2eAncestry], {render: false});
-        
-      this.debugMatch.Ancestry = {import: importAncestry, export: pf2eAncestry};
+      if (!pf2eAncestry) pf2eAncestry = await this.findItem("pf2e.ancestries", importAncestry.split(" ")[0]);
+      if (!(pf2eAncestry?.name === targetActor.ancestry?.name))
+        await targetActor.createEmbeddedDocuments('Item', [pf2eAncestry], { render: false });
+
+      this.debugMatch.Ancestry = { import: importAncestry, export: pf2eAncestry };
     }
 
     //Update Background
-    if(characterActorExport.gameValues?.actBackgroundText) {
+    if (characterActorExport.gameValues?.actBackgroundText) {
       let importBackground = characterActorExport.gameValues.actBackgroundText;
-      let pf2eBackground = await this.findItem("pf2e.backgrounds",importBackground);
-      if(!(pf2eBackground?.name === targetActor.background?.name))
-        await targetActor.createEmbeddedDocuments('Item',[pf2eBackground.toObject()], {render: false});
+      let pf2eBackground = await this.findItem("pf2e.backgrounds", importBackground);
+      if (!(pf2eBackground?.name === targetActor.background?.name))
+        await targetActor.createEmbeddedDocuments('Item', [pf2eBackground.toObject()], { render: false });
 
-      this.debugMatch.Background = {import: importBackground, export: pf2eBackground};
+      this.debugMatch.Background = { import: importBackground, export: pf2eBackground };
     }
 
     //Update Heritage
-    if(exportItems['heritage'][0]?.name) {
-      let pf2eHeritage = await this.findItem("pf2e.heritages",exportItems['heritage'][0].name);
-      if(!(pf2eHeritage?.name === targetActor.heritage?.name))
-        await targetActor.createEmbeddedDocuments('Item',[pf2eHeritage.toObject()], {render: false});
+    if (exportItems['heritage'][0]?.name) {
+      let pf2eHeritage = await this.findItem("pf2e.heritages", exportItems['heritage'][0].name);
+      if (!(pf2eHeritage?.name === targetActor.heritage?.name))
+        await targetActor.createEmbeddedDocuments('Item', [pf2eHeritage.toObject()], { render: false });
 
-      this.debugMatch.Heritage = {import: exportItems['heritage'][0].name, export: pf2eHeritage};
+      this.debugMatch.Heritage = { import: exportItems['heritage'][0].name, export: pf2eHeritage };
     }
 
     //Update Deity
-    if(exportItems['deity'][0]?.name) {
-      let pf2eDeity = await this.findItem("pf2e.deities",exportItems["deity"][0].name)
-      if(!(pf2eDeity?.name === targetActor.deity?.name))
-        await targetActor.createEmbeddedDocuments('Item',[pf2eDeity.toObject()], {render: false});
+    if (exportItems['deity'][0]?.name) {
+      let pf2eDeity = await this.findItem("pf2e.deities", exportItems["deity"][0].name)
+      if (!(pf2eDeity?.name === targetActor.deity?.name))
+        await targetActor.createEmbeddedDocuments('Item', [pf2eDeity.toObject()], { render: false });
 
-      this.debugMatch.Deity = {import: exportItems["deity"][0].name, export: pf2eDeity};
+      this.debugMatch.Deity = { import: exportItems["deity"][0].name, export: pf2eDeity };
     }
 
     //Update Level
-    await targetActor.update({"system.details.level.value": characterActorExport.gameValues.actLevelNet});
-    HeroLabImporter.log(this.hlodebug,'Updating Actor Level to '+ characterActorExport.gameValues.actLevelNet);
+    await targetActor.update({ "system.details.level.value": characterActorExport.gameValues.actLevelNet });
+    HeroLabImporter.log(this.hlodebug, 'Updating Actor Level to ' + characterActorExport.gameValues.actLevelNet);
 
     //Update Class
-    if(exportItems['class'][0]?.name) {
-      let pf2eClass = await this.findItem("pf2e.classes",exportItems['class'][0].name);
+    if (exportItems['class'][0]?.name) {
+      let pf2eClass = await this.findItem("pf2e.classes", exportItems['class'][0].name);
       this.classTrait = exportItems['class'][0].Trait;
-      
-      if(!(pf2eClass?.name === targetActor.class?.name)) {
-        const choiceHook = Hooks.on('renderChoiceSetPrompt', function(choicePrompt) {
-          if(HeroLabImporter.checkChoiceSetPrompt(exportItems, choicePrompt)) {
+
+      if (!(pf2eClass?.name === targetActor.class?.name)) {
+        const choiceHook = Hooks.on('renderChoiceSetPrompt', function (choicePrompt) {
+          if (HeroLabImporter.checkChoiceSetPrompt(exportItems, choicePrompt)) {
             choicePrompt.close();
           }
         });
-        
-        await targetActor.createEmbeddedDocuments('Item',[pf2eClass.toObject()], {render: false});
 
-        
-        for(let [k, choice] of Object.entries(ui.windows)) {
-          if(choice?.selection) choice.close();
+        await targetActor.createEmbeddedDocuments('Item', [pf2eClass.toObject()], { render: false });
+
+
+        for (let [k, choice] of Object.entries(ui.windows)) {
+          if (choice?.selection) choice.close();
         }
 
         Hooks.off('renderChoiceSetPrompt', choiceHook);
       }
 
-      this.debugMatch.Class = {import: exportItems['class'][0].name, export: pf2eClass};
+      this.debugMatch.Class = { import: exportItems['class'][0].name, export: pf2eClass };
     }
-    
+
     //Update Actor Attributes
     await this.updateActorAttributes(targetActor, exportItems['abilityScore']);
 
     //Update Actor Equipment
-    if(this.importEquipment) await this.updateActorEquipment(targetActor, exportItems['gear']);
+    if (this.importEquipment) await this.updateActorEquipment(targetActor, exportItems['gear']);
 
     //Update Actor Weapons
-    if(this.importEquipment) await this.updateActorWeapons(targetActor, exportItems['weapon']);
+    if (this.importEquipment) await this.updateActorWeapons(targetActor, exportItems['weapon']);
 
     //Update Actor Armor
-    if(this.importEquipment) await this.updateActorArmor(targetActor, exportItems['armor']);
+    if (this.importEquipment) await this.updateActorArmor(targetActor, exportItems['armor']);
 
     //Update Actor Wealth
-    if(this.importWealth) await this.updateActorWealth(targetActor, characterActorExport.gameValues?.actMoneyNet);
+    if (this.importWealth) await this.updateActorWealth(targetActor, characterActorExport.gameValues?.actMoneyNet);
 
     //Set Languages
     await this.updateActorLanguages(targetActor, exportItems['language']);
 
     //Update Actor Feats
-    if(this.importFeats) await this.updateActorFeats(targetActor, exportItems['feat']);
+    if (this.importFeats) await this.updateActorFeats(targetActor, exportItems['feat']);
 
     //Update Actor Skills
-    if(this.importSkills) await this.updateActorSkills(targetActor, exportItems['skill']);
+    if (this.importSkills) await this.updateActorSkills(targetActor, exportItems['skill']);
 
     //Update Actor Spells
-    if(this.importSpells) await this.updateActorSpells(targetActor, exportItems);
+    if (this.importSpells) await this.updateActorSpells(targetActor, exportItems);
 
 
     //List all the things we couldn't add
@@ -501,21 +501,21 @@ export class HeroLabImporter {
     HeroLabImporter.log(this.hlodebug, "Couldn't add these spells: " + this.spellsNotAdded);
 
     targetActor.update({
-    //  "flags.exportSource.world": game.world.id,
-    //  "flags.exportSource.system": game.system.id,
-    // "flags.exportSource.systemVersion": game.system.version,
-    //  "flags.exportSource.coreVersion": game.version,
+      //  "flags.exportSource.world": game.world.id,
+      //  "flags.exportSource.system": game.system.id,
+      // "flags.exportSource.systemVersion": game.system.version,
+      //  "flags.exportSource.coreVersion": game.version,
       "flags.herolabimporter.version.value": hloiVer,
     });
 
-    if(hlodebug) {
-      console.log("%cHeroLab Importer | %cMatched items:",color1,color4, this.debugMatch);
+    if (hlodebug) {
+      console.log("%cHeroLab Importer | %cMatched items:", color1, color4, this.debugMatch);
 
     }
 
   }
 
-  async findItem(packName,itemName) {
+  async findItem(packName, itemName) {
     //Locates an item in the packName pack. Goes for a close match and chooses the best one.
 
     let pack = game.packs.get(packName);
@@ -537,22 +537,22 @@ export class HeroLabImporter {
 
   static checkChoiceSetPrompt(exportItems, choicePrompt) {
 
-    for(let [index,choice] of Object.entries(choicePrompt.choices)) {
-      for(let [k, ability] of Object.entries(exportItems['ability'])) {
+    for (let [index, choice] of Object.entries(choicePrompt.choices)) {
+      for (let [k, ability] of Object.entries(exportItems['ability'])) {
         //if(choice.label.startsWith(ability.name)) {
         //I don't like this
-        if(choice.label === ability.name) {
+        if (choice.label === ability.name) {
           choicePrompt.selection = choicePrompt.choices.at(Number(index));
 
-          exportItems['ability'].splice(k,1);
+          exportItems['ability'].splice(k, 1);
           return true;
         }
       }
-      for(let [k, feat] of Object.entries(exportItems['feat'])) {
-        if(feat.name.startsWith(choice.label)) {
+      for (let [k, feat] of Object.entries(exportItems['feat'])) {
+        if (feat.name.startsWith(choice.label)) {
           choicePrompt.selection = choicePrompt.choices.at(Number(index));
 
-          exportItems['feat'].splice(k,1);
+          exportItems['feat'].splice(k, 1);
           return true;
         }
       }
@@ -560,16 +560,24 @@ export class HeroLabImporter {
     return false;
   }
 
+  processHerolabItemList(hlitems) {
+    for (let hlitem in hlitems) {
+      hlitems[hlitem].base = hlitem.substring(2, hlitem.indexOf("."));
+    }
+  }
+
   getItemsFromActor(characterActorExport) {
     //Separate out all the items from the export into a managable structure.
 
-    let items = {'ability':[],'armor':[],'abilityScore':[],'class':[],'deity':[],'feat':[],'focus':[],
-                  'gear':[],'heritage':[],'language':[],'movement':[],'naturalWeapon':[],'reserve':[],
-                  'skill':[],'save':[],'staff':[],'spell':[],'spellbook':[],'weapon':[]}
+    let items = {
+      'ability': [], 'armor': [], 'abilityScore': [], 'class': [], 'deity': [], 'feat': [], 'focus': [],
+      'gear': [], 'heritage': [], 'language': [], 'movement': [], 'naturalWeapon': [], 'reserve': [],
+      'skill': [], 'save': [], 'staff': [], 'spell': [], 'spellbook': [], 'weapon': []
+    }
 
-    
+    this.processHerolabItemList(characterActorExport.items);
     for (let item in characterActorExport.items) {
-      switch (item.substring(0,2)) {
+      switch (item.substring(0, 2)) {
         case 'ab':
           items['ability'].push(characterActorExport.items[item]);
           break;
@@ -593,7 +601,7 @@ export class HeroLabImporter {
           break;
         case 'gr':
           items['gear'].push(characterActorExport.items[item]);
-          if(characterActorExport.items[item].compset == 'Spellbook')
+          if (characterActorExport.items[item].compset == 'Spellbook')
             items['spellbook'].push(characterActorExport.items[item]);
           break;
         case 'hr':
@@ -633,10 +641,10 @@ export class HeroLabImporter {
 
   async updateActorAttributes(targetActor, exportAttributes) {
     //Abbilities by manual
-    if(targetActor.system.build.attributes.manual) {
-      for(let [k, ability] of Object.entries(exportAttributes)) {
+    if (targetActor.system.build.attributes.manual) {
+      for (let [k, ability] of Object.entries(exportAttributes)) {
         let update = ability?.stAbScModifier || 0;
-        targetActor.update({[`system.abilities.${CONSTANTS.ABILITY_LOOKUP[ability.name]}.mod`]: update});
+        targetActor.update({ [`system.abilities.${CONSTANTS.ABILITY_LOOKUP[ability.name]}.mod`]: update });
       }
     };
     //Abbilities by boosting 
@@ -661,7 +669,7 @@ export class HeroLabImporter {
     const mergeLanguages = true;
     const ancestryLanguages = targetActor.ancestry?.system.languages?.value || [];
 
-    if(mergeLanguages) {
+    if (mergeLanguages) {
       exportLanguage = [...new Set([...exportLanguage.map((l) => l.toLowerCase()), ...targetActor.system.details.languages.value.map((l) => l.toLowerCase())])];
     };
 
@@ -669,8 +677,8 @@ export class HeroLabImporter {
       .filter((l) => !ancestryLanguages.includes(l.toLowerCase()))
       .map((l) => l.toLowerCase());
 
-    
-    await targetActor.update({"system.details.languages.value": intLanguages}, {render: false});
+
+    await targetActor.update({ "system.details.languages.value": intLanguages }, { render: false });
     HeroLabImporter.log(this.hlodebug, "Updating Languages: " + intLanguages);
   }
 
@@ -679,29 +687,29 @@ export class HeroLabImporter {
 
     HeroLabImporter.log(this.hlodebug, "Updating the skills")
     const exportLore = []
-    for(let [key, skill] of exportSkill) {
+    for (let [key, skill] of exportSkill) {
       //Get the Lore skills for later
-      if(key.startsWith("skLore")) {
+      if (key.startsWith("skLore")) {
         exportLore.push(skill);
         continue;
       }
 
       //Set the skill proficiency. Foundry does the rest for me!
       let setting = `system.skills.${skill.name.toLowerCase()}.rank`;
-      await targetActor.update({[setting]: CONSTANTS.PROF_LOOKUP[skill.ProfLevel]}, {render: false});
+      await targetActor.update({ [setting]: CONSTANTS.PROF_LOOKUP[skill.ProfLevel] }, { render: false });
     }
 
     //Remove existing Lore, because I guess it easier? Why did I do this?
     //TODO: Can we, maybe, just check if they already have the Lore?
-    for(const [key, skill] of Object.entries(targetActor.system.skills)) {
-      if(skill.lore) {
+    for (const [key, skill] of Object.entries(targetActor.system.skills)) {
+      if (skill.lore) {
         targetActor.deleteEmbeddedDocuments('Item', [skill.itemID]);
       };
     };
 
     //Add the Lore skills
     var lores = [];
-    for(const lore of exportLore) {
+    for (const lore of exportLore) {
       const data = {
         name: lore.name,
         type: "lore",
@@ -723,35 +731,35 @@ export class HeroLabImporter {
 
     const newLores = foundry.utils.deepClone(lores);
 
-    await targetActor.createEmbeddedDocuments("Item", newLores, {keepId: true, render: false});
+    await targetActor.createEmbeddedDocuments("Item", newLores, { keepId: true, render: false });
     HeroLabImporter.log(this.hlodebug, "Updating Lore");
   }
 
   async updateActorFeats(targetActor, exportFeat) {
     const featItems = [];
     const slugs = [];
-    const slots = {'ancestry':[], 'class':[], 'archetype':[], 'skill':[], 'general':[]};
+    const slots = { 'ancestry': [], 'class': [], 'archetype': [], 'skill': [], 'general': [] };
 
     HeroLabImporter.log(this.hlodebug, "Updating Feats")
 
     //Get empty feat slots
-    for(let [key, value] of targetActor.feats.entries()) {
-      for(let [k, v] of Object.entries(value.slots)) {
-        if(!v?.feat) {slots[key].push(k)}
+    for (let [key, value] of targetActor.feats.entries()) {
+      for (let [k, v] of Object.entries(value.slots)) {
+        if (!v?.feat) { slots[key].push(k) }
       }
     }
 
     //Find all the Feats from Compendium
-    for(let [key, feat] of Object.entries(exportFeat)) {
+    for (let [key, feat] of Object.entries(exportFeat)) {
       let newFeat = await this.findItem("pf2e.feats-srd", feat.name);
       //Try again without parenthesis
-      if(!newFeat) {
+      if (!newFeat) {
         newFeat = await this.findItem("pf2e.feats-srd", feat.name.replace(/\s*\(.*?\)\s*/g, ''))
       }
 
-      if(newFeat) {
+      if (newFeat) {
         featItems.push(newFeat);
-        this.debugMatch.Feats.push({import: feat, export: newFeat});
+        this.debugMatch.Feats.push({ import: feat, export: newFeat });
       }
       else {
         this.itemsNotAdded.push(feat.name);
@@ -759,18 +767,18 @@ export class HeroLabImporter {
     };
 
     //Sort feats by level
-    featItems.sort((a,b) => a.system.level.value - b.system.level.value);
-    for(let [key, value] of Object.entries(featItems)) {
+    featItems.sort((a, b) => a.system.level.value - b.system.level.value);
+    for (let [key, value] of Object.entries(featItems)) {
       //If they don't have the feat, add it
-      if(!targetActor.itemTypes.feat.find(feat => feat.system.slug === value.system.slug)) {
+      if (!targetActor.itemTypes.feat.find(feat => feat.system.slug === value.system.slug)) {
         let category = value.system.category
-        if(value.system.traits.value.includes('archetype'))
+        if (value.system.traits.value.includes('archetype'))
           category = 'archetype'
         let slot = slots[category].shift();
-        await targetActor.feats.insertFeat(value, {groupId: category, slotId: slot});
+        await targetActor.feats.insertFeat(value, { groupId: category, slotId: slot });
       }
     }
-  
+
     HeroLabImporter.log(this.hlodebug, "Bro...I did what I could for the feats.");
   }
 
@@ -779,10 +787,10 @@ export class HeroLabImporter {
     let refreshAllEquipment = true;
 
     //Clear all items from Actor
-    if(refreshAllEquipment) {
+    if (refreshAllEquipment) {
       var items = targetActor.inventory.contents.filter((item) => !item.isCoinage);
       items = items.map((item) => item.id);
-      targetActor.deleteEmbeddedDocuments("Item",items, {render: false});
+      targetActor.deleteEmbeddedDocuments("Item", items, { render: false });
     }
 
     HeroLabImporter.log(this.hlodebug, "Importing Gear")
@@ -804,48 +812,118 @@ export class HeroLabImporter {
   }
 
   async updateActorWealth(targetActor, exportWealth) {
-    const coins = {cp: 0, sp: 0, gp: 0, pp: 0};
+    const coins = { cp: 0, sp: 0, gp: 0, pp: 0 };
 
     await targetActor.inventory.removeCoins(targetActor.inventory.coins);
 
     HeroLabImporter.log(hlodebug, "Updating wealth");
-    for(let coinStr of exportWealth.split(', ')) {
+    for (let coinStr of exportWealth.split(', ')) {
       let coinVal = coinStr.trim().split(' ')
-      coins[coinVal[1]] = coinVal[0].replace(',','');
+      coins[coinVal[1]] = coinVal[0].replace(',', '');
     }
 
     await targetActor.inventory.addCoins(coins);
   }
 
-  async addActorItems(targetActor, exportGear, container=undefined) {
+  async addActorItems(targetActor, exportGear, container = undefined) {
     //Adds gear with ?container
     var gearItem;
-    
+
     for (var [key, value] of Object.entries(exportGear)) {
-      if(!(value.compset == 'Spell' || value.compset == 'WeaponTrait' || value.compset == 'ArmorTrait')) {
-        gearItem = await this.findItem("pf2e.equipment-srd",value.name);
+      if (!(value.compset == 'Spell' || value.compset == 'WeaponTrait' || value.compset == 'ArmorTrait')) {
+        gearItem = await this.findItem("pf2e.equipment-srd", value.name);
         //Nothing found, try removing ending parenthetic word
-        if(!gearItem) {
-          gearItem = await this.findItem("pf2e.equipment-srd",value.name.replace(/\s*\(.*?\)\s*/g, ''));
-           if (!gearItem){
-              if (CONSTANTS.EQUIPMENT_LOOKUP[value.name]) { 
-                 gearItem = await this.findItem("pf2e.equipment-srd", CONSTANTS.EQUIPMENT_LOOKUP[value.name]); 
-               } 
-           }
+        if (!gearItem) {
+          gearItem = await this.findItem("pf2e.equipment-srd", value.base);
         }
-        if(gearItem) {
+        if (!gearItem) {
+          gearItem = await this.findItem("pf2e.equipment-srd", value.name.replace(/\s*\(.*?\)\s*/g, ''));
+          if (!gearItem) {
+            if (CONSTANTS.EQUIPMENT_LOOKUP[value.name]) {
+              gearItem = await this.findItem("pf2e.equipment-srd", CONSTANTS.EQUIPMENT_LOOKUP[value.name]);
+            }
+          }
+        }
+        if (gearItem) {
           //var addedItem = await targetActor.createEmbeddedDocuments('Item',[gearItem.toObject()], {render: false})
           var addedItem = await targetActor.addToInventory(gearItem, container);
+
           if (value?.items) {
-            await this.addActorItems(targetActor, value.items, addedItem)
+            this.processHerolabItemList(value.items)
+            if (value.compset == 'Weapon') {
+              await this.updateWeaponRune(targetActor, value.items, addedItem);
+            } else if(value.compset == 'Armor') {
+              await this.updateArmorRune(targetActor, value.items, addedItem);
+            } else {
+              await this.addActorItems(targetActor, value.items, addedItem)
+            }
           }
           if (value?.stackQty) {
             await this.updateItemQuantity(targetActor, addedItem, value.stackQty);
           }
-          this.debugMatch.Equipment.push({import: value, export: gearItem});
+          this.debugMatch.Equipment.push({ import: value, export: gearItem });
         }
         else {
           this.itemsNotAdded.push(value.name);
+        }
+      }
+    }
+  }
+
+async updateArmorRune(targetActor, gearItems, weapon) {
+    var gearItem;
+
+    for (var [key, value] of Object.entries(gearItems)) {
+      if (value.compset == 'Rune') {
+        var potencyRuneValue = CONSTANTS.FUNDAMENTAL_RUNE_ARMOR_POTENCY[value.base];
+        if (potencyRuneValue > 0) {
+          weapon.update({ "system.runes.potency": potencyRuneValue });
+          HeroLabImporter.log(this.hlodebug, potencyRuneValue);
+        }
+        var resilientRuneValue = CONSTANTS.FUNDEMENTAL_RUNE_ARMOR_RELILIENT[value.base];
+        //Verify Resilient
+        if (resilientRuneValue > 0) {
+          weapon.update({ "system.runes.resilient": resilientRuneValue });
+          HeroLabImporter.log(this.hlodebug, resilientRuneValue);
+        }
+        //Verify Property
+        if (!potencyRuneValue && !resilientRuneValue) {
+          var propertyRune = await this.findItem("pf2e.equipment-srd", value.name);
+          if (propertyRune) {
+            weapon.system.runes.property.push(propertyRune.system.slug);
+            weapon.update({ "system.runes.property": weapon.system.runes.property });
+
+          }
+      }
+    }
+  }
+}
+
+  async updateWeaponRune(targetActor, gearItems, weapon) {
+    var gearItem;
+
+    for (var [key, value] of Object.entries(gearItems)) {
+      if (value.compset == 'Rune') {
+        //Verify Potency
+        var potencyRuneValue = CONSTANTS.FUNDAMENTAL_RUNE_WEAPON_POTENCY[value.base];
+        if (potencyRuneValue > 0) {
+          weapon.update({ "system.runes.potency": potencyRuneValue });
+          HeroLabImporter.log(this.hlodebug, potencyRuneValue);
+        }
+        var strikingRuneValue = CONSTANTS.FUNDEMENTAL_RUNE_WEAPON_STRIKING[value.base];
+        //Verify Strikeing
+        if (strikingRuneValue > 0) {
+          weapon.update({ "system.runes.striking": strikingRuneValue });
+          HeroLabImporter.log(this.hlodebug, strikingRuneValue);
+        }
+        //Verify Property
+        if (!potencyRuneValue && !strikingRuneValue) {
+          var propertyRune = await this.findItem("pf2e.equipment-srd", value.name);
+          if (propertyRune) {
+            weapon.system.runes.property.push(propertyRune.system.slug);
+            weapon.update({ "system.runes.property": weapon.system.runes.property });
+
+          }
         }
       }
     }
@@ -857,14 +935,14 @@ export class HeroLabImporter {
       ['Rope', 50],
     ]);
 
-    if(excludedItems.get(addedItem.name)) {
-      count = count/excludedItems.get(addedItem.name);
+    if (excludedItems.get(addedItem.name)) {
+      count = count / excludedItems.get(addedItem.name);
     }
 
-    addedItem.update({"system.quantity": count});
+    addedItem.update({ "system.quantity": count });
   }
 
-  async updateActorSpells(targetActor,exportItems) {
+  async updateActorSpells(targetActor, exportItems) {
     //Adds the spells
     const traditions = {}
     const innateTraditions = {}
@@ -872,13 +950,13 @@ export class HeroLabImporter {
     HeroLabImporter.log(this.hlodebug, "Importing Spells")
 
     //Get spells by traditions
-    for(let [key,spell] of Object.entries(exportItems['spell'])) {
+    for (let [key, spell] of Object.entries(exportItems['spell'])) {
       let tradition = undefined
       //if((tradition = spell.Trait.split(',').find(value => /^trd/.test(value))?.substring(3))  && spell?.useInPlay) {
-      if((tradition = spell.Trait.split(',').find(value => /^trd/.test(value))?.substring(3))) {
+      if ((tradition = spell.Trait.split(',').find(value => /^trd/.test(value))?.substring(3))) {
 
-        if(spell?.SpellHelper === "Innate") {
-          if(tradition in innateTraditions) {
+        if (spell?.SpellHelper === "Innate") {
+          if (tradition in innateTraditions) {
             innateTraditions[tradition].push(spell);
           }
           else {
@@ -887,7 +965,7 @@ export class HeroLabImporter {
           }
         }
         else {
-          if(tradition in traditions) {
+          if (tradition in traditions) {
             traditions[tradition].push(spell);
           }
           else {
@@ -910,29 +988,29 @@ export class HeroLabImporter {
   async updateInnateSpells(targetActor, traditions, actorClass) {
     var spellcastingEntry;
     //Loop through the traditions from export
-    for(let [tradition,spells] of Object.entries(traditions)) {
+    for (let [tradition, spells] of Object.entries(traditions)) {
 
       //See if they have a tradition that matches their class spellcasting abilities
       //See if they already have this tradition
       spellcastingEntry = this.existingSpellcastingEntry(targetActor.spellcasting.collections.entries(), actorClass.ability, 'innate', tradition);
       //They don't have one, so make it
-      if(!spellcastingEntry) spellcastingEntry = await this.createSpellcastingEntry(targetActor, `Innate Spells`, tradition.toLowerCase(), 'innate', actorClass.ability);
-      
+      if (!spellcastingEntry) spellcastingEntry = await this.createSpellcastingEntry(targetActor, `Innate Spells`, tradition.toLowerCase(), 'innate', actorClass.ability);
+
       //Add the spells to the spellcasting entry
-      for(let [key,spell] of Object.entries(spells)) {
+      for (let [key, spell] of Object.entries(spells)) {
         let spellItem = await this.findItem('pf2e.spells-srd', itemRename(spell.name))
         //Can't find spell, try without ()
-        if(!spellItem) spellItem = await this.findItem("pf2e.spells-srd", itemRename(spell.name.replace(/\s*\(.*?\)\s*/g, '')));
+        if (!spellItem) spellItem = await this.findItem("pf2e.spells-srd", itemRename(spell.name.replace(/\s*\(.*?\)\s*/g, '')));
 
         let foundSpell = spellcastingEntry.getName(spellItem.name)
-        if(foundSpell?.system.location.heightenedLevel != spell.spLevelNet && !foundSpell?.system.traits.value.includes('cantrip')) {
-          let newSpell = await spellcastingEntry.addSpell(spellItem, {groupId: spell.spLevelNet });
-          this.debugMatch.Spells.push({import: spell, export: newSpell});
-          newSpell.update({'system.location.uses.max': spell?.trkMaximum, 'system.location.uses.min': spell?.trkMaximum}, {render: false});
+        if (foundSpell?.system.location.heightenedLevel != spell.spLevelNet && !foundSpell?.system.traits.value.includes('cantrip')) {
+          let newSpell = await spellcastingEntry.addSpell(spellItem, { groupId: spell.spLevelNet });
+          this.debugMatch.Spells.push({ import: spell, export: newSpell });
+          newSpell.update({ 'system.location.uses.max': spell?.trkMaximum, 'system.location.uses.min': spell?.trkMaximum }, { render: false });
         }
       }
-      
-      spellcastingEntry.entry.update({'system.showSlotlessLevels.value': false});
+
+      spellcastingEntry.entry.update({ 'system.showSlotlessLevels.value': false });
     }
   }
 
@@ -943,73 +1021,73 @@ export class HeroLabImporter {
     let dedicationClass = new Map();
     let dedicationFeats = targetActor.items.filter(i => /Dedication/.test(i.name) && i.type == 'feat');
 
-    for(let [k,v] of Object.entries(dedicationFeats)) {
+    for (let [k, v] of Object.entries(dedicationFeats)) {
       let testClass = CONSTANTS.CLASS_CASTER_TYPE[v.name.split(' ')[0].toLowerCase()];
       if (testClass) dedicationClass.set(v.name.split(' ')[0], testClass);
     }
 
     //Loop through the traditions from export
-    for(let [tradition,spells] of Object.entries(traditions)) {
+    for (let [tradition, spells] of Object.entries(traditions)) {
       let dedication = Array.from(dedicationClass).find(i => i[1].tradition.includes(tradition.toLowerCase()))
 
       //See if they have a tradition that matches their class spellcasting abilities
-      if(actorClass.tradition.includes(tradition.toLowerCase())) {
+      if (actorClass.tradition.includes(tradition.toLowerCase())) {
         //See if they already have this tradition
         spellcastingEntry = this.existingSpellcastingEntry(targetActor.spellcasting.collections.entries(), actorClass.ability, actorClass.type, tradition);
         //They don't have one, so make it
-        if(!spellcastingEntry) spellcastingEntry = await this.createSpellcastingEntry(targetActor, `${targetActor.class.name} Spells`, tradition.toLowerCase(), actorClass.type, actorClass.ability);
+        if (!spellcastingEntry) spellcastingEntry = await this.createSpellcastingEntry(targetActor, `${targetActor.class.name} Spells`, tradition.toLowerCase(), actorClass.type, actorClass.ability);
       }
-      else if(dedication) {
+      else if (dedication) {
         //See if they already have this tradition
         spellcastingEntry = this.existingSpellcastingEntry(targetActor.spellcasting.collections.entries(), dedication[1].ability, dedication[1].type, tradition);
         //They don't have one, so make it
-        if(!spellcastingEntry) spellcastingEntry = await this.createSpellcastingEntry(targetActor, `${dedication[0]} Spells`, tradition.toLowerCase(), dedication[1].type, dedication[1].ability);
+        if (!spellcastingEntry) spellcastingEntry = await this.createSpellcastingEntry(targetActor, `${dedication[0]} Spells`, tradition.toLowerCase(), dedication[1].type, dedication[1].ability);
       }
-      
+
       //Add the spells to the spellcasting entry
-      for(let [key,spell] of Object.entries(spells)) {
+      for (let [key, spell] of Object.entries(spells)) {
         let spellItem = await this.findItem('pf2e.spells-srd', itemRename(spell.name))
         //Can't find spell, try without ()
-        if(!spellItem) spellItem = await this.findItem("pf2e.spells-srd", itemRename(spell.name.replace(/\s*\(.*?\)\s*/g, '')));
+        if (!spellItem) spellItem = await this.findItem("pf2e.spells-srd", itemRename(spell.name.replace(/\s*\(.*?\)\s*/g, '')));
 
         let foundSpell = spellcastingEntry.getName(spellItem.name)
-        if(spellcastingEntry.entry.system.prepared.value === "prepared") {
-          if(!foundSpell) spellcastingEntry.addSpell(spellItem);
+        if (spellcastingEntry.entry.system.prepared.value === "prepared") {
+          if (!foundSpell) spellcastingEntry.addSpell(spellItem);
         }
-        else if(foundSpell?.system.location.heightenedLevel != spell.spLevelNet && !foundSpell?.system.traits.value.includes('cantrip')) {
-          spellcastingEntry.addSpell(spellItem, {groupId: spell.spLevelNet });
+        else if (foundSpell?.system.location.heightenedLevel != spell.spLevelNet && !foundSpell?.system.traits.value.includes('cantrip')) {
+          spellcastingEntry.addSpell(spellItem, { groupId: spell.spLevelNet });
         }
-        this.debugMatch.Spells.push({import: spell, export: spellItem});
+        this.debugMatch.Spells.push({ import: spell, export: spellItem });
       }
     }
   }
 
   async updateFocusSpells(targetActor, exportItems) {
     //Add focus spells
-    for(let [key, spell] of Object.entries(exportItems['focus'])) {
+    for (let [key, spell] of Object.entries(exportItems['focus'])) {
       let tradition = spell.Trait.split(',').find(value => /^trd/.test(value)).substring(3)
       let cl = spell.Trait.split(',').find(value => /^cl/.test(value)).substring(2)
       let focusClass = CONSTANTS.CLASS_CASTER_TYPE[cl.toLowerCase()]
 
       //Check for existing entry
       let spellcastingEntry = this.existingSpellcastingEntry(targetActor.spellcasting.collections.entries(), focusClass.ability, 'focus', tradition);
-      if(!spellcastingEntry) spellcastingEntry = await this.createSpellcastingEntry(targetActor, `${cl} Focus Spells`, tradition.toLowerCase(), 'focus', focusClass.ability);
+      if (!spellcastingEntry) spellcastingEntry = await this.createSpellcastingEntry(targetActor, `${cl} Focus Spells`, tradition.toLowerCase(), 'focus', focusClass.ability);
 
       let spellItem = await this.findItem('pf2e.spells-srd', itemRename(spell.name))
 
       //If they don't have it, give it to them
-      if(!spellcastingEntry.getName(spellItem.name)) {
+      if (!spellcastingEntry.getName(spellItem.name)) {
         spellcastingEntry.addSpell(spellItem, spell.spLevelNet);
-        this.debugMatch.Spells.push({import: spell, export: spellItem});
+        this.debugMatch.Spells.push({ import: spell, export: spellItem });
       }
     }
   }
 
   existingSpellcastingEntry(spellcastingEntries, ability, prepared, tradition) {
     //Check for existing spellcasting entry
-    for(let [key, value] of spellcastingEntries) {
+    for (let [key, value] of spellcastingEntries) {
       let spEntry = value.entry.system;
-      if(spEntry?.ability.value == ability.substring(0,3) && spEntry?.prepared.value == prepared && spEntry?.tradition.value == tradition.toLowerCase())
+      if (spEntry?.ability.value == ability.substring(0, 3) && spEntry?.prepared.value == prepared && spEntry?.tradition.value == tradition.toLowerCase())
         return value;
     }
     return undefined;
@@ -1022,19 +1100,19 @@ export class HeroLabImporter {
       type: 'spellcastingEntry',
       name: name,
       system: {
-          prepared: {
-              value: prepared
-          },
-          ability: {
-              value: ability.substring(0,3)
-          },
-          tradition: {
-              value: tradition
-          }
+        prepared: {
+          value: prepared
+        },
+        ability: {
+          value: ability.substring(0, 3)
+        },
+        tradition: {
+          value: tradition
+        }
       }
     }
 
-    const [spellcastingEntry] = await targetActor.createEmbeddedDocuments('Item', [createData], {render: false});
+    const [spellcastingEntry] = await targetActor.createEmbeddedDocuments('Item', [createData], { render: false });
 
     return spellcastingEntry.spells;
   }
@@ -1043,7 +1121,7 @@ export class HeroLabImporter {
     const shouldLog = force || hlodebug
 
     if (shouldLog) {
-      console.log("%cHeroLab Importer | %c" + args,color1,color4)
+      console.log("%cHeroLab Importer | %c" + args, color1, color4)
     }
   }
 }
