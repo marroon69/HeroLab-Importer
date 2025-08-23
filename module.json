@@ -9,10 +9,10 @@
       "discord": "marroon69"
     }
   ],
-  "version": "#{VERSION}#",
+  "version": "13.0.1",
   "compatibility": {
     "minimum": "12",
-    "verified": "13.347",
+    "verified": "13",
     "maximum": "13"
   },
   "relationships": {
@@ -31,11 +31,9 @@
   "esmodules": [
       "src/app/herolab-importer.js"
   ],
-  "styles": [],
-  "packs": [],
-  "url": "#{URL}#",
-  "manifest": "#{MANIFEST}#",
-  "download": "#{DOWNLOAD}#",
+  
+  "url": "https://github.com/marroon69/HeroLab-Importer",
+  "manifest": "https://github.com/marroon69/HeroLab-Importer/blob/main/module.json",
   "license": "MIT",
   "readme": "https://github.com/marroon69/HeroLab-Importer/blob/main/README.md",
   "bugs": "https://github.com/marroon69/HeroLab-Importer/issues",
