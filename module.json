@@ -4,16 +4,16 @@
   "description": "This module adds a button to the top of player character sheets allowing them to quickly import their character from Herolab Online.",
   "authors": [
     {
-      "name": "Avry Whitesides (GeneralHuli)",
-      "url": "https://github.com/GeneralHuli",
-      "discord": "GeneralHuli"
+      "name": "Craig Steinhoff (marroon69)",
+      "url": "https://github.com/marroon69/HeroLab-Importer",
+      "discord": "marroon69"
     }
   ],
   "version": "#{VERSION}#",
   "compatibility": {
-    "minimum": "10",
-    "verified": "12.327",
-    "maximum": "12"
+    "minimum": "12",
+    "verified": "13.324",
+    "maximum": "13"
   },
   "relationships": {
     "systems": [
@@ -22,8 +22,8 @@
         "type": "system",
         "manifest": "https://github.com/foundryvtt/pf2e/releases/download/latest/system.json",
         "compatibility": {
-          "minimum": "6.0.1",
-          "verified": "6.0.2"
+          "minimum": "7.0.0",
+          "verified": "7.4.2"
         }
       }
     ]
@@ -37,7 +37,7 @@
   "manifest": "#{MANIFEST}#",
   "download": "#{DOWNLOAD}#",
   "license": "MIT",
-  "readme": "https://raw.githubusercontent.com/GeneralHuli/HeroLab-Importer/main/README.md",
-  "bugs": "https://github.com/GeneralHuli/HeroLab-Importer/issues",
-  "changelog": "https://github.com/GeneralHuli/HeroLab-Importer/main/CHANGELOG.md"  
+  "readme": "https://github.com/marroon69/HeroLab-Importer/blob/main/README.md",
+  "bugs": "https://github.com/marroon69/HeroLab-Importer/issues",
+  "changelog": "https://github.com/marroon69/HeroLab-Importer/main/CHANGELOG.md"  
 }

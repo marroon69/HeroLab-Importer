@@ -3,7 +3,7 @@
 This FoundryVTT module imports Pathfinder 2E characters from Hero Lab Online.
 
 Currently, it has basic funtionality with improvements planned along the way.
-Built with heavy inspiration from zarmstrong's [Herolab Online PF2e Import Tool](https://github.com/zarmstrong/hlo-importer), as it looks like it's been abandoned.
+Built with heavy inspiration from zarmstrong's and General Huli's [Herolab Online PF2e Import Tool](https://github.com/zarmstrong/hlo-importer) and [Herolab Online PF2e Import Tool](https://github.com/GeneralHuli/HeroLab-Importer), since both look as then have been abandoned. Thanks to both for there hardwork!
 
 # Features
 
