@@ -164,7 +164,7 @@ export class HeroLabImporter {
         <div>
           <p>Step 1: Get the character token by clicking on the kebab menu (<strong>⋮</strong>) on any character on your account. Scroll down to "Element Token" and click the <strong>Get Element Token</strong> button. Click the <strong>Copy to Clipboard</strong> button.</p>
           <p>Step 2: Paste the Element Token from the Herolab Online export dialog below</p>
-          <p><strong>Please change input method for attributes to "Manual Entry" before you continue! That is currently the only input method supported by the importer.</strong></p>
+          <p><strong>This module will change input method for attributes to "Manual Entry"! That is currently the only input method supported by the importer.</strong></p>
           <br>
           <p>Please note - items which cannot be matched to the Foundry database will not be imported!<p>
         </div>
@@ -641,27 +641,26 @@ export class HeroLabImporter {
 
   async updateActorAttributes(targetActor, exportAttributes) {
     //Abbilities by manual
-    await targetActor.update({ "system.build.attributes.manual": true }, { render: true });
-    if (targetActor.system.build.attributes.manual) {
-      for (let [k, ability] of Object.entries(exportAttributes)) {
-        let update = ability?.stAbScModifier || 0;
-        targetActor.update({ [`system.abilities.${CONSTANTS.ABILITY_LOOKUP[ability.name]}.mod`]: update });
-      }
-    };
-    //Abbilities by boosting 
-    //TODO: This doesn't work yet.
-    /*
-    else {
-      const boosts = {
-        "Charisma": 0,
-        "Constitution": 0,
-        "Dexterity": 0,
-        "Intelligence": 0,
-        "Strength": 0,
-        "Wisdon": 0,
-      }
-    };
-    */
+    targetActor.update({
+      ['system.abilities.int.mod']: 2,
+      ['system.abilities.int.value']: 10,
+      ['system.abilities.str.mod']: 2,
+      ['system.abilities.str.value']: 10,
+      ['system.abilities.dex.mod']: 2,
+      ['system.abilities.dex.value']: 10,
+      ['system.abilities.con.mod']: 2,
+      ['system.abilities.con.value']: 10,
+      ['system.abilities.wis.mod']: 2,
+      ['system.abilities.wis.value']: 10,
+      ['system.abilities.cha.mod']: 2,
+      ['system.abilities.cha.value']: 10
+    })
+
+    for (let [k, ability] of Object.entries(exportAttributes)) {
+      let update = ability?.stAbScModifier || 0;
+      targetActor.update({ [`system.abilities.${CONSTANTS.ABILITY_LOOKUP[ability.name]}.mod`]: update });
+    }
+
   }
 
   async updateActorLanguages(targetActor, exportLanguage) {
@@ -853,7 +852,7 @@ export class HeroLabImporter {
             this.processHerolabItemList(value.items)
             if (value.compset == 'Weapon') {
               await this.updateWeaponRune(targetActor, value.items, addedItem);
-            } else if(value.compset == 'Armor') {
+            } else if (value.compset == 'Armor') {
               await this.updateArmorRune(targetActor, value.items, addedItem);
             } else {
               await this.addActorItems(targetActor, value.items, addedItem)
@@ -871,7 +870,7 @@ export class HeroLabImporter {
     }
   }
 
-async updateArmorRune(targetActor, gearItems, armor) {
+  async updateArmorRune(targetActor, gearItems, armor) {
     var gearItem;
 
     for (var [key, value] of Object.entries(gearItems)) {
@@ -896,10 +895,10 @@ async updateArmorRune(targetActor, gearItems, armor) {
             HeroLabImporter.log(this.hlodebug, `Adding Property Rune ${propertyRune.name} to ${armor.name}`);
 
           }
+        }
       }
     }
   }
-}
 
   async updateWeaponRune(targetActor, gearItems, weapon) {
     var gearItem;
@@ -910,7 +909,7 @@ async updateArmorRune(targetActor, gearItems, armor) {
         var potencyRuneValue = CONSTANTS.FUNDAMENTAL_RUNE_WEAPON_POTENCY[value.base];
         if (potencyRuneValue > 0) {
           weapon.update({ "system.runes.potency": potencyRuneValue });
-          HeroLabImporter.log(this.hlodebug, `Adding Potency Rune ${potencyRuneValue} to ${weapon.name}`);      
+          HeroLabImporter.log(this.hlodebug, `Adding Potency Rune ${potencyRuneValue} to ${weapon.name}`);
         }
         var strikingRuneValue = CONSTANTS.FUNDEMENTAL_RUNE_WEAPON_STRIKING[value.base];
         //Verify Strikeing
